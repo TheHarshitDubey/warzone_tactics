@@ -2,7 +2,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../services/auth_service.dart';
+import 'package:warzone_tactics/services/auth_services.dart';
+
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -38,8 +39,8 @@ class DashboardScreen extends StatelessWidget {
           var data = snapshot.data!;
           int gold = data['gold'];
           int armyPower = data['armyPower'];
-          int wins = data['wins'];
-          int losses = data['losses'];
+          int win = data['wins'];
+          int loss = data['losses'];
 
           return Padding(
             padding: const EdgeInsets.all(20),
@@ -49,8 +50,8 @@ class DashboardScreen extends StatelessWidget {
 
                 Text("Gold: $gold", style: const TextStyle(fontSize: 18)),
                 Text("Army Power: $armyPower", style: const TextStyle(fontSize: 18)),
-                Text("Wins: $wins", style: const TextStyle(fontSize: 18)),
-                Text("Losses: $losses", style: const TextStyle(fontSize: 18)),
+                Text("Wins: $win", style: const TextStyle(fontSize: 18)),
+                Text("Loss: $loss", style: const TextStyle(fontSize: 18)),
 
                 const SizedBox(height: 30),
 
@@ -81,7 +82,7 @@ class DashboardScreen extends StatelessWidget {
                           .doc(user.uid)
                           .update({
                         'gold': gold + 200,
-                        'wins': wins + 1,
+                        'wins': win + 1,
                       });
 
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -92,14 +93,17 @@ class DashboardScreen extends StatelessWidget {
                           .collection('users')
                           .doc(user.uid)
                           .update({
-                        'losses': losses + 1,
+                        'losses': loss + 1,
                       });
 
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text("Defeat! Enemy Power: $enemyPower")),
                       );
                     }
+                    // print('Your Power: $armyPower');
+                    // print("enemyPower: $enemyPower");
                   },
+                  
                   child: const Text("Attack Enemy"),
                 ),
               ],

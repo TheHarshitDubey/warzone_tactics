@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:warzone_tactics/screens/auth_wrapper.dart';
 import 'package:warzone_tactics/services/auth_services.dart';
+
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -23,33 +25,44 @@ class _SignupScreenState extends State<SignupScreen> {
           children: [
             const Text("Signup", style: TextStyle(fontSize: 28)),
             const SizedBox(height: 20),
+
             TextField(
               controller: emailController,
               decoration: const InputDecoration(labelText: "Email"),
             ),
+
             TextField(
               controller: passwordController,
               decoration: const InputDecoration(labelText: "Password"),
               obscureText: true,
             ),
+
             const SizedBox(height: 20),
+
             ElevatedButton(
-              onPressed: () async {
-                try {
-                  await _authService.signUp(
-                    emailController.text.trim(),
-                    passwordController.text.trim(),
-                  );
-                  // Do nothing here
-                  // AuthWrapper will automatically redirect to Dashboard
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Signup Error: $e")),
-                  );
-                }
-              },
-              child: const Text("Sign Up"),
-            ),
+  onPressed: () async {
+    try {
+      await _authService.signUp(
+        emailController.text.trim(),
+        passwordController.text.trim(),
+      );
+
+      
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const AuthWrapper(),
+        ),
+        (route) => false,
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Signup Error: $e")),
+      );
+    }
+  },
+  child: const Text("Sign Up"),
+),
           ],
         ),
       ),
