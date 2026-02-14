@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "32934950180",
+    "project_id": "warzone-tactics-f49bd",
+    "storage_bucket": "warzone-tactics-f49bd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:32934950180:android:3846612aa8042b570b2fb1",
+        "android_client_info": {
+          "package_name": "com.example.warzone_tactics"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB74_HO-AXTziDaHDW5fcxEAfjCAm32LwQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
