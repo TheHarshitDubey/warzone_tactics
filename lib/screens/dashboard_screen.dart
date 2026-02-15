@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -9,6 +10,7 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser!;
+    final AudioPlayer audioPlayer=AudioPlayer();
 
     return Scaffold(
       body: Stack(
@@ -46,11 +48,22 @@ class DashboardScreen extends StatelessWidget {
                 int armyPower = data['armyPower'] ?? 0;
                 int wins = data['wins'] ?? 0;
                 int losses = data['losses'] ?? 0;
-
-                double winRate = wins + losses == 0
+                int totalMatches = wins + losses;
+                double winRate = totalMatches == 0
                     ? 0
-                    : (wins / (wins + losses)) * 100;
-
+                    : (wins / (totalMatches)) * 100;
+                String getPerformanceRating(double winRate){
+                  if(winRate>=80)return "Elite Commander";
+                  if(winRate>=80)return "Skilled Warrior";
+                  if(winRate>=80)return "Rising Fighter";
+                  return "In Training";
+                }
+                String getEnemyMove(int playerHealth, int enemyHealth){
+                  if(playerHealth<=25) return "Finisher Attack";
+                  else if (enemyHealth<=30) return "Defensive Mode";
+                  else if (enemyHealth<playerHealth) return "Strategic Counter";
+                  else return "Balanced Strike";
+                }
                 return SingleChildScrollView(
                   padding: const EdgeInsets.all(20),
                   child: Column(
@@ -79,13 +92,17 @@ class DashboardScreen extends StatelessWidget {
                       buildStatCard(Icons.close, "Losses", "$losses"),
                       buildStatCard(Icons.percent, "Win Rate",
                           "${winRate.toStringAsFixed(1)}%"),
+                      buildStatCard(Icons.star, "Rank", getPerformanceRating(winRate)),
 
                       const SizedBox(height: 30),
 
                       buildWarButton(
                         title: "Train Army (Cost: 100 Gold)",
                         color: Colors.green,
-                        onTap: gold >= 100
+                        onTap:()async{
+                          await audioPlayer.play(AssetSource('assets/sounds/train'));
+                        
+                        gold >= 100
                             ? () async {
                                 await FirebaseFirestore.instance
                                     .collection('users')
@@ -95,7 +112,8 @@ class DashboardScreen extends StatelessWidget {
                                   'armyPower': armyPower + 10,
                                 });
                               }
-                            : null,
+                            : null;
+                        } 
                       ),
 
                       const SizedBox(height: 20),
@@ -104,7 +122,9 @@ class DashboardScreen extends StatelessWidget {
                       buildWarButton(
                         title: "Attack Enemy",
                         color: Colors.red,
-                        onTap: () async {
+                        onTap: ()async{
+                          await audioPlayer.play(AssetSource('assets/sounds/attack'));
+                          () async {
                           int enemyPower =
                               Random().nextInt(armyPower + 50) + 10;
 
@@ -129,8 +149,10 @@ class DashboardScreen extends StatelessWidget {
 
                             showMessage(context,
                                 "Defeat! Enemy Power: $enemyPower");
-                          }
-                        },
+                          } String enemyMove=getEnemyMove(armyPower, enemyPower);
+                          showMessage(context, "Enemy uses: $enemyMove");
+                        };
+                        }
                       ),
 
                       const SizedBox(height: 30),
@@ -158,6 +180,7 @@ class DashboardScreen extends StatelessWidget {
 
   Widget buildStatCard(IconData icon, String title, String value) {
     return Card(
+      elevation: 4,
       color: Colors.grey.shade900.withOpacity(0.8),
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
